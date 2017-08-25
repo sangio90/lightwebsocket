@@ -1,0 +1,19 @@
+{
+    "name": "sangio90/light-websocket",
+    "require": {
+        "cboden/ratchet": "^0.3.6",
+        "monolog/monolog": "^1.23",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "authors": [
+        {
+            "name": "sangio90",
+            "email": "sangiovanni.guido@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "LightWebSocket\\": "src"
+        }
+    }
+}
