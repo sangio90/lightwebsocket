@@ -12,28 +12,10 @@ class Server implements MessageComponentInterface
 
     protected $channels = [];
 
-    //Indirizzo del "trusted host", che può creare canali, iscrivere resources a dei canali, disisscrivere resources
-    protected $allowedAddress;
-
-    //Questo URL viene chiamato ogni volta che si riceve una connessione da qualsiasi host (tranne da un allowedAddress)
-    protected $newConnectionPath;
-
-    //TODO Fare in modo che alla ricezione di un particolare messaggio (che il client invierà dopo la login, con il prorpio PHPSESSID)
-    //Venga chiamata una API fissa, di un ip configurabile, poi sarà l'applicazione remota a gestire le subscribe
-    //Nei reports/sap ecc.. gestire un'API accessibile senza login che si aspetta un PHPSESSID e un resourceId
-    //Quindi cerca nei propri user_role i ruoli legati a session->auth/user e invia un messaggio di tipo subscribe ai canali con
-    //gli stessi nomi dei ruoli
-    //TODO Unico problema: capire come leggere una sessione a partire dal PHPSESSID
-
     const MESSAGETYPE_SUBSCRIBE = 'subscribe';
     const MESSAGETYPE_UNSUBSCRIBE = 'unsubscribe';
     const MESSAGETYPE_CREATECHANNEL = 'createChannel';
     const MESSAGETYPE_COMMUNICATION = 'communication';
-
-    public function __construct($allowedAddress = '')
-    {
-        $this->allowedAddress = $allowedAddress;
-    }
 
     public function onOpen(ConnectionInterface $conn)
     {
@@ -41,30 +23,7 @@ class Server implements MessageComponentInterface
         $this->clients[$resourceId] = $conn;
         $this->log('New Connection ' . $resourceId . PHP_EOL);
         $conn->send(json_encode(['resourceId' => $resourceId, 'body' => 'Resource id: ' . $resourceId . '!']));
-//        $this->handleNewConnection($conn);
     }
-
-//    public function handleNewConnection(ConnectionInterface $conn)
-//    {
-//        $sessionId = array_key_exists('PHPSESSID', $_COOKIE) ? $_COOKIE['PHPSESSID'] : 'NO_SESSION';
-//
-//        $this->log('session : ' . print_r($_SESSION, true));
-//
-//        if ($conn->remoteAddress === $this->allowedAddress) {
-//            $client = new Client(['base_uri' => 'http://' . $this->allowedAddress]);
-//            try {
-//                $response = $client->get($this->newConnectionPath, [
-//                    'query' => [
-//                        'resourceId' => $conn->resourceId,
-//                        'PHPSESSID' => $sessionId,
-//                    ],
-//                ]);
-//                echo $response->getBody()->getContents();
-//            } catch (\Exception $e) {
-//                echo $e->getMessage();
-//            }
-//        }
-//    }
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
@@ -188,14 +147,6 @@ class Server implements MessageComponentInterface
         $conn->send('connection closed due to an error: ' . $e->getMessage()); //TODO remove e->getMessage x sicurezza
         $conn->close();
     }
-
-//    /**
-//     * @param mixed $newConnectionPath
-//     */
-//    public function setNewConnectionPath($newConnectionPath)
-//    {
-//        $this->newConnectionPath = $newConnectionPath;
-//    }
 
     public function log($message)
     {
