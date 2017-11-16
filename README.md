@@ -18,6 +18,6 @@ Unsubscribes a resourceId from a channel (or all channels if '*' is specified)
 #### communication
 Base message which is just propagated to the destintation channel
 
-###TODO
+### TODO
 - log method should be fixed, it now uses an absolute path.
 - port should be configurable
